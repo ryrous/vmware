@@ -1,4 +1,6 @@
-$vmList = Get-Content .\Servers.txt
-foreach ($vm in $vmList){
-    Get-Item .\McAfee\McAfee.zip | Copy-VMGuestFile -Destination "C:\McAfee\" -VM $vm -LocalToGuest -GuestUser Administrator -GuestPassword PASSWORD -Force
+$VMs = Import-Csv .\VMList.csv
+function Copy-File {
+    foreach ($VM in $VMs){
+        Get-Item "C:\Directory\*" | Copy-VMGuestFile -Destination 'C:\Directory\' -VM $vm -LocalToGuest -GuestUser "domain\user" -GuestPassword Password -Confirm:$false
+    }
 }
