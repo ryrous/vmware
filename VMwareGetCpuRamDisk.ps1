@@ -1,1 +1,0 @@
-Get-VM -Name (Get-Content -Path .\ServerList.txt) | Select-Object Name, Host, NumCpu, MemoryMB, ProvisionedSpaceGB, UsedSpaceGB | Sort-Object Name | Export-Csv -Path .\VMCpuRamDisk.csv -NoTypeInformation

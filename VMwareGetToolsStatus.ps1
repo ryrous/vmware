@@ -1,1 +1,0 @@
-Get-VM -Name * | ForEach-Object {Get-View $_.id} | Select-Object Name, @{Name="VMware Tools Version"; Expression={$_.config.tools.toolsVersion}}, @{ Name="VMware Tools Status"; Expression={$_.Guest.ToolsVersionStatus}} | Export-Csv .\ToolsStatus.csv -NoTypeInformation
