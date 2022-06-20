@@ -1,0 +1,1 @@
+Get-VM -Name * | Where-Object {$_.PowerState -eq "PoweredOn"} | Update-Tools -NoReboot
