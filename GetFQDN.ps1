@@ -1,1 +1,1 @@
-Get-VM | Select-Object Name, Folder, Guest, PowerState, VMHost, PersistentId, @{N='IP';E={$_.Guest.IPAddress -join '|'}}, @{N='FQDN';E={$_.ExtensionData.Guest.IPStack[0].DnsConfig.HostName,$_.ExtensionData.Guest.IPStack[0].DnsConfig.DomainName -join '.'}}
+Get-VM | Select-Object Name, @{N='FQDN';E={$_.ExtensionData.Guest.IPStack[0].DnsConfig.HostName,$_.ExtensionData.Guest.IPStack[0].DnsConfig.DomainName -join '.'}}
