@@ -1,0 +1,4 @@
+{
+    "aws.telemetry": false,
+    "powershell.powerShellDefaultVersion": "PowerShell Core 7 (x64)"
+}
