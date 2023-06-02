@@ -11,5 +11,5 @@ $Script = '
     }'
  
 foreach ($VM in $VMs) {
-    Invoke-VMScript -ScriptText $Script -VM $VM.Name -GuestUser $User -GuestPassword $Pass -ScriptType Powershell | Export-Csv -Path .\SQLVersions.csv -Append -NoTypeInformation
+    Invoke-VMScript -ScriptText $Script -VM $VMs.Name -GuestUser $User -GuestPassword $Pass -ScriptType Powershell | Export-Csv -Path .\SQLVersions.csv -Append -NoTypeInformation
 }
