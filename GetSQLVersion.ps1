@@ -3,13 +3,10 @@ $User = "Administrator"
 $Pass = "Password"
 
 $Script = '
-    $inst = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server").InstalledInstances
-    ForEach ($i in $inst) {
-        $p = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$i
-        (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$p\Setup").Edition
-        (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$p\Setup").PatchLevel
-    }'
- 
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | Select-Object DisplayName | Where-Object -Property DisplayName -Like "Microsoft SQL Server*"
+'
+
 foreach ($VM in $VMs) {
-    Invoke-VMScript -ScriptText $Script -VM $VMs.Name -GuestUser $User -GuestPassword $Pass -ScriptType Powershell | Export-Csv -Path .\SQLVersions.csv -Append -NoTypeInformation
+    Invoke-VMScript -ScriptText $Script -VM $VM.Name -GuestUser $User -GuestPassword $Pass -ScriptType Powershell `
+    | Select-Object -Property Name, ScriptOutput -ExpandProperty ScriptOutput | Out-File .\SQLVersions.txt -Append
 }
