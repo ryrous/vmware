@@ -74,3 +74,4 @@ Function Get-VMInformation {
     }
     END {}
 }
+#Get-VM | Get-VMInformation | Out-GridView
