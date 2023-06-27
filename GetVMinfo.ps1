@@ -42,17 +42,17 @@ Function Get-VMInformation {
                 $vCenter = $Object.Uid -replace ".+@"; $vCenter = $vCenter -replace ":.+"
                 [PSCustomObject]@{
                     Name        = $Object.Name
-                    PowerState  = $Object.PowerState
-                    vCenter     = $vCenter
-                    Datacenter  = $Object.VMHost | Get-Datacenter | Select-Object -ExpandProperty Name
-                    Cluster     = $Object.VMhost | Get-Cluster | Select-Object -ExpandProperty Name
-                    VMHost      = $Object.VMhost
-                    Datastore   = ($Object | Get-Datastore | Select-Object -ExpandProperty Name) -join ', '
-                    FolderName  = $Object.Folder
-                    GuestOS     = $Object.ExtensionData.Config.GuestFullName
-                    NetworkName = ($Object | Get-NetworkAdapter | Select-Object -ExpandProperty NetworkName) -join ', '
                     Domain      = $Object.ExtensionData.Guest.IpStack.DnsConfig.DomainName
                     IPAddress   = ($Object.ExtensionData.Summary.Guest.IPAddress) -join ', '
+                    GuestOS     = $Object.ExtensionData.Config.GuestFullName
+                    PowerState  = $Object.PowerState
+                    Datacenter  = $Object.VMHost | Get-Datacenter | Select-Object -ExpandProperty Name
+                    vCenter     = $vCenter
+                    VMHost      = $Object.VMhost
+                    Cluster     = $Object.VMhost | Get-Cluster | Select-Object -ExpandProperty Name
+                    FolderName  = $Object.Folder
+                    Datastore   = ($Object | Get-Datastore | Select-Object -ExpandProperty Name) -join ', '
+                    NetworkName = ($Object | Get-NetworkAdapter | Select-Object -ExpandProperty NetworkName) -join ', '
                     MacAddress  = ($Object | Get-NetworkAdapter | Select-Object -ExpandProperty MacAddress) -join ', '
                     VMTools     = $Object.ExtensionData.Guest.ToolsVersionStatus2
                 }
@@ -74,3 +74,4 @@ Function Get-VMInformation {
     }
     END {}
 }
+#Get-VM | Get-VMInformation | Out-GridView
