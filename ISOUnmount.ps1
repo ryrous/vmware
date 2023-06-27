@@ -1,0 +1,1 @@
+Get-CDDrive -VM (Get-Content .\MountedISOs.txt) | Set-CDDrive -NoMedia
