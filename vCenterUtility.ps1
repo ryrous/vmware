@@ -87,7 +87,7 @@ function Show-Menu {
     Write-Host "11b: Press '11b' to show users in Admins group on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "12a: Press '12a' to add ADMT account to Admins group on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "12b: Press '12b' to add ADMT account to Admins group on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "14: Press '14' to test authentication of ADMT account." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "13a: Press '13a' to test authentication of ADMT account." -ForegroundColor Blue -BackgroundColor Black
 
     Write-Host "WINDOWS SERVICES" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "31a: Press '31a' to get all services on specific VM." -ForegroundColor Blue -BackgroundColor Black
@@ -848,7 +848,7 @@ do {
                 Add-Account2GroupAll
             }
         }
-        '14' {
+        '13a' {
             'Testing authentication of ADMT account...'
             foreach ($VM in $VMs) {
                 Test-ADAuthentication
