@@ -63,7 +63,7 @@ function Show-Menu {
     Write-Host "4: Press '4' to see if VMs are in vCenter." -ForegroundColor DarkGreen -BackgroundColor Black
 
     Write-Host "VMWARE TOOLS STATUS" -ForegroundColor DarkYellow -BackgroundColor Black
-    Write-Host "91a: Press '91a' to check VMware Tools on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "91a: Press '91a' to check VMware Tools on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "91b: Press '91b' to check VMware Tools on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "92a: Press '92a' to update VMware Tools on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "92b: Press '92b' to update VMware Tools on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
@@ -76,17 +76,23 @@ function Show-Menu {
     Write-Host "104a: Press '104a' to shutdown a specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "105a: Press '105a' to power off a specific VM." -ForegroundColor Blue -BackgroundColor Black
 
+    Write-Host "VM CPU AND MEMORY" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "121a: Press '121a' to get weekly CPU and Memory usage report on specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "121b: Press '121b' to get weekly CPU and Memory usage report on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "122a: Press '122a' to get monthly CPU and Memory usage report on specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "122b: Press '122b' to get monthly CPU and Memory usage report on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+
     Write-Host "WINDOWS ADMIN ACCOUNTS" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "11a: Press '11a' to show users in Admins group on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "11b: Press '11b' to show users in Admins group on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "12a: Press '12a' to add ADMT account to Admins group on specific VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "12b: Press '12b' to add ADMT account to Admins group on each VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "14: Press '14' to test authentication of ADMT account." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "12b: Press '12b' to add ADMT account to Admins group on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "14: Press '14' to test authentication of ADMT account." -ForegroundColor Blue -BackgroundColor Black
 
     Write-Host "WINDOWS SERVICES" -ForegroundColor DarkYellow -BackgroundColor Black
-    Write-Host "31a: Press '31a' to get all services on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "31a: Press '31a' to get all services on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "31b: Press '31b' to get all services on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "32a: Press '32a' to check for a specific Service on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "32a: Press '32a' to check for a specific Service on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "32b: Press '32b' to check for a specific Service on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
 
     Write-Host "IP AND DNS ADDRESSES" -ForegroundColor DarkYellow -BackgroundColor Black
@@ -161,6 +167,93 @@ function Get-LocationOfVMs {
     } else {
         Write-Host "$VM does not exist in vCenter" -ForegroundColor Red -BackgroundColor Black
     }
+}
+
+<# VM CPU AND MEMORY #>
+function Get-WeeklyCPURAM4VM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Getting CPU and Memory Weekly Usage Report for $TargetVM" -ForegroundColor Blue -BackgroundColor Black
+    $AllVMs = @()
+    (VMware.VimAutomation.Core\Get-VM $TargetVM) | ForEach-Object {
+        $vmstat = “” | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+        $vmstat.VmName = "$TargetVM"
+        $statcpuweek = Get-Stat -Entity ($TargetVM) -Start (Get-Date).AddDays(-7) -Finish (Get-Date) -MaxSamples 100 -Stat cpu.usage.average
+        $statmemweek = Get-Stat -Entity ($TargetVM) -Start (Get-Date).AddDays(-7) -Finish (Get-Date) -MaxSamples 100 -Stat mem.usage.average
+        $cpuweek = $statcpuweek | Measure-Object -Property Value -Average -Maximum -Minimum
+        $memweek = $statmemweek | Measure-Object -Property Value -Average -Maximum -Minimum
+        $vmstat.CPUMax = [math]::Round($cpuweek.Maximum)
+        $vmstat.CPUAvg = [math]::Round($cpuweek.Average)
+        $vmstat.CPUMin = [math]::Round($cpuweek.Minimum)
+        $vmstat.MemMax = [math]::Round($memweek.Maximum)
+        $vmstat.MemAvg = [math]::Round($memweek.Average)
+        $vmstat.MemMin = [math]::Round($memweek.Minimum)
+        $AllVMs += $vmstat
+    }
+    $AllVMs | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+}
+
+function Get-WeeklyCPURAM4All {
+    Write-Host "Getting CPU and Memory Weekly Usage Report for $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    $AllVMs = @()
+    (VMware.VimAutomation.Core\Get-VM $VM) | ForEach-Object {
+        $vmstat = “” | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+        $vmstat.VmName = "$VM"
+        $statcpuweek = Get-Stat -Entity ($VM) -Start (Get-Date).AddDays(-7) -Finish (Get-Date) -MaxSamples 100 -Stat cpu.usage.average
+        $statmemweek = Get-Stat -Entity ($VM) -Start (Get-Date).AddDays(-7) -Finish (Get-Date) -MaxSamples 100 -Stat mem.usage.average
+        $cpuweek = $statcpuweek | Measure-Object -Property Value -Average -Maximum -Minimum
+        $memweek = $statmemweek | Measure-Object -Property Value -Average -Maximum -Minimum
+        $vmstat.CPUMax = [math]::Round($cpuweek.Maximum)
+        $vmstat.CPUAvg = [math]::Round($cpuweek.Average)
+        $vmstat.CPUMin = [math]::Round($cpuweek.Minimum)
+        $vmstat.MemMax = [math]::Round($memweek.Maximum)
+        $vmstat.MemAvg = [math]::Round($memweek.Average)
+        $vmstat.MemMin = [math]::Round($memweek.Minimum)
+        $AllVMs += $vmstat
+    }
+    $AllVMs | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+}
+
+function Get-MonthlyCPURAM4VM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Getting CPU and Memory Monthly Usage Report for $TargetVM" -ForegroundColor Blue -BackgroundColor Black
+    $AllVMs = @()
+    (VMware.VimAutomation.Core\Get-VM $TargetVM) | ForEach-Object {
+        $vmstat = “” | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+        $vmstat.VmName = "$TargetVM"
+        $statcpumonth = Get-Stat -Entity ($TargetVM) -Start (Get-Date).AddDays(-30) -Finish (Get-Date) -MaxSamples 1000 -Stat cpu.usage.average
+        $statmemmonth = Get-Stat -Entity ($TargetVM) -Start (Get-Date).AddDays(-30) -Finish (Get-Date) -MaxSamples 1000 -Stat mem.usage.average
+        $cpumonth = $statcpumonth | Measure-Object -Property value -Average -Maximum -Minimum
+        $memmonth = $statmemmonth | Measure-Object -Property value -Average -Maximum -Minimum
+        $vmstat.CPUMax = [math]::Round($cpumonth.Maximum)
+        $vmstat.CPUAvg = [math]::Round($cpumonth.Average)
+        $vmstat.CPUMin = [math]::Round($cpumonth.Minimum)
+        $vmstat.MemMax = [math]::Round($memmonth.Maximum)
+        $vmstat.MemAvg = [math]::Round($memmonth.Average)
+        $vmstat.MemMin = [math]::Round($memmonth.Minimum)
+        $AllVMs += $vmstat
+    }
+    $AllVMs | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+}
+
+function Get-MonthlyCPURAM4All {
+    Write-Host "Getting CPU and Memory Monthly Usage Report for $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    $AllVMs = @()
+    (VMware.VimAutomation.Core\Get-VM $VM) | ForEach-Object {
+        $vmstat = “” | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
+        $vmstat.VmName = "$VM"
+        $statcpumonth = Get-Stat -Entity ($VM) -Start (Get-Date).AddDays(-30) -Finish (Get-Date) -MaxSamples 1000 -Stat cpu.usage.average
+        $statmemmonth = Get-Stat -Entity ($VM) -Start (Get-Date).AddDays(-30) -Finish (Get-Date) -MaxSamples 1000 -Stat mem.usage.average
+        $cpumonth = $statcpumonth | Measure-Object -Property value -Average -Maximum -Minimum
+        $memmonth = $statmemmonth | Measure-Object -Property value -Average -Maximum -Minimum
+        $vmstat.CPUMax = [math]::Round($cpumonth.Maximum)
+        $vmstat.CPUAvg = [math]::Round($cpumonth.Average)
+        $vmstat.CPUMin = [math]::Round($cpumonth.Minimum)
+        $vmstat.MemMax = [math]::Round($memmonth.Maximum)
+        $vmstat.MemAvg = [math]::Round($memmonth.Average)
+        $vmstat.MemMin = [math]::Round($memmonth.Minimum)
+        $AllVMs += $vmstat
+    }
+    $AllVMs | Select-Object VmName, CPUMin, CPUAvg, CPUMax, MemMin, MemAvg, MemMax
 }
 
 <# WINDOWS ADMIN ACCOUNTS #>
@@ -1051,6 +1144,28 @@ do {
             'Getting 1-week vMotion events of VMs...'
             foreach ($VM in $VMs) {
                 Get-DailyVmotion4All
+            }
+        }
+
+        <# VM CPU AND MEMORY #>
+        '121a' {
+            'Checking CPU and Memory on VM...'
+            Get-WeeklyCPURAM4VM
+        }
+        '121b' {
+            'Checking CPU and Memory on VMs...'
+            foreach ($VM in $VMs) {
+                Get-WeeklyCPURAM4All
+            }
+        }
+        '122a' {
+            'Checking CPU and Memory on VM...'
+            Get-MonthlyCPURAM4VM
+        }
+        '122b' {
+            'Checking CPU and Memory on VMs...'
+            foreach ($VM in $VMs) {
+                Get-MonthlyCPURAM4All
             }
         }
     }
