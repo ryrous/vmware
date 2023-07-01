@@ -69,18 +69,25 @@ function Show-Menu {
     Write-Host "92b: Press '92b' to update VMware Tools on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
 
     Write-Host "VM POWER AND REBOOT" -ForegroundColor DarkYellow -BackgroundColor Black
-    Write-Host "101a: Press '101a' to reboot a specific VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "102a: Press '102a' to check Power Status on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "101a: Press '101a' to check Power Status on specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "101b: Press '101b' to check Power Status on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "102a: Press '102a' to reboot a specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "103a: Press '103a' to power on a specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "104a: Press '104a' to shutdown a specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "105a: Press '105a' to power off a specific VM." -ForegroundColor Blue -BackgroundColor Black
 
-    Write-Host "ADMIN ACCOUNTS" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "WINDOWS ADMIN ACCOUNTS" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "11a: Press '11a' to show users in Admins group on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "11b: Press '11b' to show users in Admins group on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "12a: Press '12a' to add ADMT account to Admins group on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "12b: Press '12b' to add ADMT account to Admins group on each VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "14: Press '14' to test authentication of ADMT account." -ForegroundColor DarkGreen -BackgroundColor Black
+
+    Write-Host "WINDOWS SERVICES" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "31a: Press '31a' to get all services on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "31b: Press '31b' to get all services on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "32a: Press '32a' to check for a specific Service on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "32b: Press '32b' to check for a specific Service on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
 
     Write-Host "IP AND DNS ADDRESSES" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "21a: Press '21a' to get IP Address for specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
@@ -93,12 +100,6 @@ function Show-Menu {
     Write-Host "24b: Press '24b' to set the DNS Server Address on each VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "25a: Press '25a' to register DNS on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "25b: Press '25b' to register DNS on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
-
-    Write-Host "SERVICES" -ForegroundColor DarkYellow -BackgroundColor Black
-    Write-Host "31a: Press '31a' to get all services on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "31b: Press '31b' to get all services on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "32a: Press '32a' to check for a specific Service on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "32b: Press '32b' to check for a specific Service on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
 
     Write-Host "NETWORK CONNECTIVITY" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "41a: Press '41a' to ping ComputerName of specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
@@ -162,7 +163,7 @@ function Get-LocationOfVMs {
     }
 }
 
-<# ADMIN ACCOUNTS #>
+<# WINDOWS ADMIN ACCOUNTS #>
 function Get-UsersInAdminGroup {
     $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
     Write-Host "Getting users in Administrators group on $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
@@ -268,7 +269,7 @@ function Invoke-RegisterDNSAll {
     $SO.ScriptOutput
 }
 
-<# SERVICES #>
+<# WINDOWS SERVICES #>
 function Get-ServicesOnVM {
     $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
     Write-Host "Getting List of all Services on $TargetVM"
@@ -653,15 +654,21 @@ function Update-VmWareToolsOnVMAll {
 }
 
 <# VM POWER AND REBOOT #>
-function Invoke-RebootOfVM {
+function Get-PowerStatusOfVM {
     $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
-    Write-Host "Restarting $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
-    Restart-VMGuest $TargetVM
+    Write-Host "Getting Power Status of $TargetVM" -ForegroundColor Blue -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $TargetVM) | Select-Object Powerstate
 }
 
-function Get-PowerStatusOfVM {
+function Get-PowerStatusOfVMAll {
     Write-Host "Getting Power Status of $VM" -ForegroundColor DarkGreen -BackgroundColor Black
     (VMware.VimAutomation.Core\Get-VM $VM) | Select-Object Powerstate
+}
+
+function Invoke-RebootOfVM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Restarting $TargetVM" -ForegroundColor Blue -BackgroundColor Black
+    Restart-VMGuest $TargetVM
 }
 
 function Start-PoweredOffVM {
@@ -727,7 +734,7 @@ do {
             }
         }
        
-        <# ADMT ACCOUNTS AND LOCAL ADMIN GROUPS #>
+        <# WINDOWS ADMIN ACCOUNTS #>
         '11a' {
             'Getting users in Admins group on specific VM...'
             Get-UsersInAdminGroup
@@ -807,7 +814,7 @@ do {
             }
         }
 
-        <# SERVICES #>
+        <# WINDOWS SERVICES #>
         '31a' {
             'Getting list of all Services on specific VM...'
             Get-ServicesOnVM
@@ -998,15 +1005,19 @@ do {
         }
 
         <# VM POWER AND REBOOT #>
-        '101A' {
-            'Getting list of VMs...'
-            Invoke-RebootOfVM
+        '101a' {
+            'Getting Power Status of VM...'
+            Get-PowerStatus4VM
         }
-        '102a' {
+        '101b' {
             'Getting Power Status of VMs...'
             foreach ($VM in $VMs) {
-                Get-PowerStatusOfVM
+                Get-PowerStatus4VMAll
             }
+        }
+        '102A' {
+            'Getting list of VMs...'
+            Invoke-RebootOfVM
         }
         '103A' {
             'Powering On specific VM...'
