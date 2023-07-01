@@ -56,20 +56,26 @@ function Show-Menu {
     Clear-Host
     Write-Host "================ $Title ================"
     
-    Write-Host "VCENTER AND LIST VERIFICATION" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "VCENTER AND VM LIST" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "1: Press '1' to connect to vCenter." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "2: Press '2' to disconnect from vCenter." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "3: Press '3' to show VMs in list." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "4: Press '4' to see if VMs are in vCenter." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "5: Press '5' to reboot a specific VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "6a: Press '6a' to check Power Status on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "6b: Press '6b' to power on a specific VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "6c: Press '6c' to shutdown a specific VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "6d: Press '6d' to power off a specific VM." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "7a: Press '7a' to check VMware Tools on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
-    Write-Host "7b: Press '7b' to update VMware Tools on specific VM." -ForegroundColor Blue -BackgroundColor Black
 
-    Write-Host "ADMT ACCOUNTS AND LOCAL ADMIN GROUPS" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "VMWARE TOOLS STATUS" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "91a: Press '91a' to check VMware Tools on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "91b: Press '91b' to check VMware Tools on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "92a: Press '92a' to update VMware Tools on specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "92b: Press '92b' to update VMware Tools on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+
+    Write-Host "VM POWER AND REBOOT" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "101a: Press '101a' to reboot a specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "102a: Press '102a' to check Power Status on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "103a: Press '103a' to power on a specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "104a: Press '104a' to shutdown a specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "105a: Press '105a' to power off a specific VM." -ForegroundColor Blue -BackgroundColor Black
+
+    Write-Host "ADMIN ACCOUNTS" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "11a: Press '11a' to show users in Admins group on specific VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "11b: Press '11b' to show users in Admins group on each VM." -ForegroundColor DarkGreen -BackgroundColor Black
     Write-Host "12a: Press '12a' to add ADMT account to Admins group on specific VM." -ForegroundColor Blue -BackgroundColor Black
@@ -123,15 +129,21 @@ function Show-Menu {
     Write-Host "65a: Press '65a' to set Backup Policy to Snapshot on specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "65b: Press '65b' to set Backup Policy to Snapshot on each VM." -ForegroundColor Blue -BackgroundColor Black
 
+    Write-Host "MANUAL MOVES" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "81a: Press '81a' to manually move specific VM to new domain." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "81b: Press '81b' to manually move each VM to new domain." -ForegroundColor Blue -BackgroundColor Black
+
     Write-Host "SNAPSHOTS" -ForegroundColor DarkYellow -BackgroundColor Black
     Write-Host "71a: Press '71a' to take Snapshot of specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "71b: Press '71b' to take Snapshot of each VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "72a: Press '72a' to remove all Snapshots of specific VM." -ForegroundColor Blue -BackgroundColor Black
     Write-Host "72b: Press '72b' to remove all Snapshots of each VM." -ForegroundColor Blue -BackgroundColor Black
 
-    Write-Host "MANUAL MOVES" -ForegroundColor DarkYellow -BackgroundColor Black
-    Write-Host "81a: Press '81a' to manually move specific VM to new domain." -ForegroundColor Blue -BackgroundColor Black
-    Write-Host "81b: Press '81b' to manually move each VM to new domain." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "VMOTION" -ForegroundColor DarkYellow -BackgroundColor Black
+    Write-Host "111a: Press '111a' to get 24-hours of VMotion events of specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "111b: Press '111b' to get 24-hours of VMotion events of each VM." -ForegroundColor DarkGreen -BackgroundColor Black
+    Write-Host "112a: Press '112a' to get 1-week of VMotion events of specific VM." -ForegroundColor Blue -BackgroundColor Black
+    Write-Host "112b: Press '112b' to get 1-week of VMotion events of each VM." -ForegroundColor DarkGreen -BackgroundColor Black
 
     Write-Host "Q: Press 'Q' to quit."
 }
@@ -150,44 +162,7 @@ function Get-LocationOfVMs {
     }
 }
 
-function Invoke-RebootOfVM {
-    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
-    Write-Host "Restarting $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
-    Restart-VMGuest $TargetVM
-}
-
-function Get-PowerStatusOfVM {
-    Write-Host "Getting Power Status of $VM" -ForegroundColor DarkGreen -BackgroundColor Black
-    (VMware.VimAutomation.Core\Get-VM $VM) | Select-Object Powerstate
-}
-
-function Start-PoweredOffVM {
-    Write-Host "Starting $VM" -ForegroundColor Blue -BackgroundColor Black
-    Start-VM -VM $VM -Confirm:$false
-}
-
-function Invoke-ShutdownOfVM {
-    Write-Host "Shutting down $VM" -ForegroundColor Blue -BackgroundColor Black
-    Shutdown-VMGuest -VM $VM -Confirm:$False
-}
-
-function Invoke-PowerOffOfVM {
-    Write-Host "Starting $VM" -ForegroundColor Blue -BackgroundColor Black
-    Stop-VM -VM $VM -Confirm:$False
-}
-
-function Get-VMwareToolsStatusOfVM {
-    Write-Host "Getting VMware Tools Status of $VM" -ForegroundColor DarkGreen -BackgroundColor Black
-    ((VMware.VimAutomation.Core\Get-VM $VM) | Get-View).Guest.ToolsStatus
-}
-
-function Update-VmWareToolsOnVM {
-    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
-    Write-Host "Updating VmWare Tools on $TargetVM" -ForegroundColor Blue -BackgroundColor Black
-    (VMware.VimAutomation.Core\Get-VM $TargetVM) | Update-Tools -NoReboot
-}
-
-<# ADMT ACCOUNTS AND LOCAL ADMIN GROUPS #>
+<# ADMIN ACCOUNTS #>
 function Get-UsersInAdminGroup {
     $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
     Write-Host "Getting users in Administrators group on $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
@@ -654,6 +629,78 @@ function Add-VM2NewDomainAll {
     Write-Host "Done!" -ForegroundColor Green -BackgroundColor Black
 }
 
+<# VMWARE TOOLS STATUS #>
+function Get-VMwareToolsStatusOfVM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Getting VMware Tools Status of $TargetVM" -ForegroundColor Blue -BackgroundColor Black
+    ((VMware.VimAutomation.Core\Get-VM $TargetVM) | Get-View).Guest.ToolsStatus
+}
+
+function Get-VMwareToolsStatusOfVMAll {
+    Write-Host "Getting VMware Tools Status of $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    ((VMware.VimAutomation.Core\Get-VM $VM) | Get-View).Guest.ToolsStatus
+}
+
+function Update-VmWareToolsOnVM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Updating VmWare Tools on $TargetVM" -ForegroundColor Blue -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $TargetVM) | Update-Tools -NoReboot
+}
+
+function Update-VmWareToolsOnVMAll {
+    Write-Host "Updating VmWare Tools on $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $VM) | Update-Tools -NoReboot
+}
+
+<# VM POWER AND REBOOT #>
+function Invoke-RebootOfVM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Restarting $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
+    Restart-VMGuest $TargetVM
+}
+
+function Get-PowerStatusOfVM {
+    Write-Host "Getting Power Status of $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $VM) | Select-Object Powerstate
+}
+
+function Start-PoweredOffVM {
+    Write-Host "Starting $VM" -ForegroundColor Blue -BackgroundColor Black
+    Start-VM -VM $VM -Confirm:$false
+}
+
+function Invoke-ShutdownOfVM {
+    Write-Host "Shutting down $VM" -ForegroundColor Blue -BackgroundColor Black
+    Shutdown-VMGuest -VM $VM -Confirm:$False
+}
+
+function Invoke-PowerOffOfVM {
+    Write-Host "Starting $VM" -ForegroundColor Blue -BackgroundColor Black
+    Stop-VM -VM $VM -Confirm:$False
+}
+
+<# VMOTION #>
+function Get-DailyVmotion4VM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Getting 24-hour vMotion events for $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $TargetVM) | Get-VMotion -Days 1 | Format-List *
+}
+
+function Get-DailyVmotion4All {
+    Write-Host "Getting 24-hour vMotion events for $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $VM) | Get-VMotion -Days 1 | Format-List *
+}
+
+function Get-WeeklyVmotion4VM {
+    $TargetVM = Read-Host -Prompt "Enter the name of the VM: "
+    Write-Host "Getting 24-hour vMotion events for $TargetVM" -ForegroundColor DarkGreen -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $TargetVM) | Get-VMotion -Days 7 | Format-List *
+}
+
+function Get-WeeklyVmotion4All {
+    Write-Host "Getting 24-hour vMotion events for $VM" -ForegroundColor DarkGreen -BackgroundColor Black
+    (VMware.VimAutomation.Core\Get-VM $VM) | Get-VMotion -Days 7 | Format-List *
+}
 
 <# EXECUTE INTERACTIVE MENU #>
 do {
@@ -679,38 +726,7 @@ do {
                 Get-LocationOfVMs
             }
         }
-        '5' {
-            'Getting list of VMs...'
-            Invoke-RebootOfVM
-        }
-        '6a' {
-            'Getting Power Status of VMs...'
-            foreach ($VM in $VMs) {
-                Get-PowerStatusOfVM
-            }
-        }
-        '6b' {
-            'Powering On specific VM...'
-            Start-PoweredOffVM
-        }
-        '6c' {
-            'Shutting Down specific VM...'
-            Invoke-ShutdownOfVM
-        }
-        '6d' {
-            'Powering Off specific VM...'
-            Invoke-PowerOffOfVM
-        }
-        '7a' {
-            'Getting VMware Tools Status of VMs...'
-            foreach ($VM in $VMs) {
-                Get-VMwareToolsStatusOfVM
-            }
-        }
-        '7b' {
-            'Updating VMware Tools on specific VM...'
-            Update-VmWareToolsOnVM
-        }
+       
         <# ADMT ACCOUNTS AND LOCAL ADMIN GROUPS #>
         '11a' {
             'Getting users in Admins group on specific VM...'
@@ -738,6 +754,7 @@ do {
                 Test-ADAuthentication
             }
         }
+
         <# IP AND DNS ADDRESSES #>
         '21a' {
             'Getting IP Address for each VM...'
@@ -789,6 +806,7 @@ do {
                 Invoke-RegisterDNSAll
             }
         }
+
         <# SERVICES #>
         '31a' {
             'Getting list of all Services on specific VM...'
@@ -810,6 +828,7 @@ do {
                 Get-SpecificSVCAll
             }
         }
+
         <# NETWORK CONNECTIVITY #>
         '41a' {
             'Pinging specific VM by ComputerName...'
@@ -857,6 +876,7 @@ do {
                 Test-ReachDomainDCIP
             }
         }
+
         <# WINDOWS FIREWALL #>
         '51a' {
             'Getting status of Windows Firewall on specific VM...'
@@ -878,6 +898,7 @@ do {
                 Set-WinFirewallOffAll
             }
         }
+
         <# BACKUP POLICY #>
         '61a' {
             'Show list of VMs with Backup Policy set to Exclude...'
@@ -919,6 +940,7 @@ do {
                 Set-BackupPolicy2SnapshotAll
             }
         }
+
         <# SNAPSHOTS #>
         '71a' {
             'Take Snapshot of specific VM...'
@@ -940,6 +962,7 @@ do {
                 Remove-AllSnapshots4All
             }
         }
+
         <# MANUAL MOVES #>
         '81a' {
             'Manually moving specific VM...'
@@ -949,6 +972,74 @@ do {
             'Manually moving each VM...'
             foreach ($VM in $VMs) {
                 Add-VM2NewDomainAll
+            }
+        }
+
+        <# VMWARE TOOLS STATUS #>
+        '91b' {
+            'Getting VMware Tools Status on VM...'
+            Get-VMwareToolsStatusOfVM
+        }
+        '91b' {
+            'Getting VMware Tools Status on VMs...'
+            foreach ($VM in $VMs) {
+                Get-VMwareToolsStatusOfVMAll
+            }
+        }
+        '92a' {
+            'Updating VMware Tools on VM...'
+            Update-VmWareToolsOnVM
+        }
+        '92b' {
+            'Updating VMware Tools on VMs...'
+            foreach ($VM in $VMs) {
+                Update-VmWareToolsOnVMAll
+            }
+        }
+
+        <# VM POWER AND REBOOT #>
+        '101A' {
+            'Getting list of VMs...'
+            Invoke-RebootOfVM
+        }
+        '102a' {
+            'Getting Power Status of VMs...'
+            foreach ($VM in $VMs) {
+                Get-PowerStatusOfVM
+            }
+        }
+        '103A' {
+            'Powering On specific VM...'
+            Start-PoweredOffVM
+        }
+        '104A' {
+            'Shutting Down specific VM...'
+            Invoke-ShutdownOfVM
+        }
+        '105A' {
+            'Powering Off specific VM...'
+            Invoke-PowerOffOfVM
+        }
+
+        <# VMOTION#>
+        '111a' {
+            'Getting 24-hour vMotion events of VM...'
+            Get-DailyVmotion4VM
+        }
+        '111b' {
+            'Getting 24-hour vMotion events of VMs...'
+            foreach ($VM in $VMs) {
+                Get-DailyVmotion4All
+            }
+        }
+        '112a' {
+            'Getting 1-week vMotion events of VM...'
+            Get-DailyVmotion4VM
+        }
+        '112b' {
+            'Getting 1-week vMotion events of VMs...'
+            foreach ($VM in $VMs) {
+                Get-DailyVmotion4All
             }
         }
     }

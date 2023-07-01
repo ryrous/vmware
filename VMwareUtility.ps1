@@ -690,6 +690,7 @@ do {
                 Remove-AllSnapshots4All
             }
         }
+        <# VMOTION #>
         '81a' {
             'Getting 24-hour vMotion events of VM...'
             Get-DailyVmotion4VM
