@@ -11,4 +11,3 @@ foreach($cluster in Get-Cluster){
         }
    }
 }
-$report | Export-Csv .\E1000VMs.csv -NoTypeInformation -UseCulture
