@@ -1,5 +1,5 @@
 $AllHosts = @()
-Get-VM * | ForEach-Object {
+Get-VMHost * | ForEach-Object {
     $hoststat = "" | Select-Object HostName, MemMax, MemAvg, MemMin, CPUMax, CPUAvg, CPUMin
     $hoststat.HostName = $_.Name
     $statcpu = Get-Stat -Entity $_ -Start (Get-Date).AddDays(-30) -Finish (Get-Date)-MaxSamples 1000 -Stat cpu.usage.average
