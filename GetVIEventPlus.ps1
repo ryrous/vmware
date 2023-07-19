@@ -123,7 +123,7 @@ function Get-MotionHistory {
         .EXAMPLE
         PS> Get-MotionHistory -Entity $cluster -Sort:$false
         .EXAMPLE
-        PS> Get-Datacenter -Name $dcName |
+        PS> Get-Datacenter -Name $dcName | 
         >> Get-MotionHistory -Days 7 -Sort:$false
     #>
     param(
