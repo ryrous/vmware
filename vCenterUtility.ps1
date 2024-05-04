@@ -155,7 +155,6 @@ function Show-Menu {
     Write-Host "Q: Press 'Q' to quit."
 }
 
-
 <# VCENTER AND LIST VERIFICATION #>
 function Connect-2vCenter {
     Connect-VIServer -Server $vCenter -User $vCenterUser -Password $vCenterPassword
